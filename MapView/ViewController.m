@@ -7,56 +7,37 @@
 //
 
 #import "ViewController.h"
-#import "MapPin.h"
 #import "PEConstants.h"
+#import "BarDetailViewController.h"
 
-@interface ViewController () 
+@interface ViewController () {
+    Bar *selectedBar;
+}
 
 @end
 
 @implementation ViewController
 @synthesize mapView;
 @synthesize locationManager;
+@synthesize location;
+@synthesize selectedBar;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    // ** Don't forget to add NSLocationWhenInUseUsageDescription in MyApp-Info.plist and give it a string
     
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
-    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
-    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [self.locationManager requestWhenInUseAuthorization];
-    }
-    [self.locationManager startUpdatingLocation];
-    //[self.locationManager stopUpdatingLocation];
-    CLLocation *location = [locationManager location];
-    float longitude=location.coordinate.longitude;
-    float latitude=location.coordinate.latitude;
-    NSLog(@"Latitude: %f -- Longitude %f", latitude, longitude);
+    // get current location
+    [self getCurrentLocation];
     
-    MKCoordinateRegion region = { {0.0, 0.0}, {0.0, 0.0} };
-    region.center.latitude = latitude;
-    region.center.longitude = longitude;
-    region.span.longitudeDelta = 0.01f;
-    region.span.latitudeDelta = 0.01f;
-    [mapView setRegion:region animated:YES];
+    // set MKMapViewDelegate to self
+    self.mapView.delegate =self;
     
-    /*
-     MapPin *pin = [[MapPin alloc] init];
-    pin.title = @"Golden Gate Bridge";
-    pin.subtitle = @"This is the coolest bridge in San Francisco.";
-    MKCoordinateRegion pinRegion;
-    pinRegion.center.latitude = 37.8197222;
-    pinRegion.center.longitude = -122.4788889;
-    pin.coordinate = pinRegion.center;
-    [mapView addAnnotation:pin];
-    */
-    NSString *urlString = [NSString stringWithFormat:@"http://www.alcohost.com/global_bars_xml_edit.php?today=%@",[self today]];
-    NSURL *url = [[NSURL alloc]initWithString:urlString];
-    NSData *data = [[NSData alloc] initWithContentsOfURL:url];
+    // create pointer to bar data xml file
+    NSData *data = [self setData];
+    
+    // parse xml file and add annotations to map
     [self doParse:data];
+    
+    [self zoomIn];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -64,6 +45,7 @@
     // Dispose of any resources that can be recreated.
 }
 
+// Button Control for Standard, Satellite, and Hybrid Map Views
 - (IBAction)setMap:(id)sender {
     switch (((UISegmentedControl *) sender).selectedSegmentIndex) {
         case 0:
@@ -81,42 +63,48 @@
     }
 }
 
-// Location Manager Delegate Methods
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-{
-    NSLog(@"%@", [locations lastObject]);
+// Gets the user's current location
+-(void) getCurrentLocation {
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    
+    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
+    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.locationManager requestWhenInUseAuthorization];
+    }
+    [self.locationManager startUpdatingLocation];
+    //[self.locationManager stopUpdatingLocation];
+    
+    self.location = [locationManager location];
+    float longitude=self.location.coordinate.longitude;
+    float latitude=self.location.coordinate.latitude;
+    NSLog(@"Latitude: %f -- Longitude %f", latitude, longitude);
 }
 
-- (IBAction)getLocation:(id)sender {
-    mapView.showsUserLocation = YES;
-}
-
-- (IBAction)direction:(id)sender {
-    NSString *urlString = @"http://maps.apple.com/maps?daddr=37.8197222,-122.4788889";
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+// Sets the data file to pass to NSXMLParser
+- (NSData *) setData {
+    NSString *urlString = [NSString stringWithFormat:@"http://www.alcohost.com/global_bars_xml_edit.php?today=%@",[self today]];
+    NSURL *url = [[NSURL alloc]initWithString:urlString];
+    NSData *data = [[NSData alloc] initWithContentsOfURL:url];
+    return data;
 }
 
 // Method to parse XML file
 - (void) doParse:(NSData *)data {
-    
     // create and init NSXMLParser object
     NSXMLParser *nsXmlParser = [[NSXMLParser alloc] initWithData:data];
-    
-    // create and init our delegate
+    // create and init the delegate
     Parser *parser = [[Parser alloc] initXMLParser];
-    
     // set delegate
     [nsXmlParser setDelegate:parser];
-    
     // parsing...
     BOOL success = [nsXmlParser parse];
-    
     // test the result
     if (success) {
         NSLog(@"Success!");
         // get array of users here
         //  NSMutableArray *users = [parser users];
-        
+        // Add Annotations to the MapView
         for (Bar *bar in parser.bars) {
             if (bar)
             [self createMarkerForBar:bar];
@@ -126,24 +114,105 @@
     }
 }
 
+// Places an annotation on the MapView
 -(void) createMarkerForBar:(Bar *)bar {
  
-     MapPin *pin = [[MapPin alloc] init];
-     pin.title = bar.name;
-     pin.subtitle = bar.mon;
-     MKCoordinateRegion pinRegion;
-     pinRegion.center.latitude = bar.lat;
-     pinRegion.center.longitude = bar.lng;
-     pin.coordinate = pinRegion.center;
-     [mapView addAnnotation:pin];
+    Bar *pin = [[Bar alloc] init];
+    pin.title = bar.name;
+    pin.subtitle = bar.special;
+    pin.name = bar.name;
+    pin.street = bar.street;
+    pin.city = bar.city;
+    pin.state = bar.state;
+    pin.zip = bar.zip;
+    pin.special = bar.special;
+    
+    MKCoordinateRegion pinRegion;
+    pinRegion.center.latitude = bar.lat;
+    pinRegion.center.longitude = bar.lng;
+    pin.coordinate = pinRegion.center;
+    [mapView addAnnotation:pin];
 }
 
+// Get's the day of the week
 -(NSString *) today {
     NSDate *today = [NSDate date];
     NSDateFormatter *myFormatter = [[NSDateFormatter alloc] init];
     [myFormatter setDateFormat:@"EEEE"]; // day, like "Saturday"
     [myFormatter setDateFormat:@"c"]; // day number, like 7 for saturday
     return[myFormatter stringFromDate:today];
+}
+
+// Converts miles to meters
+-(double) getMetersFromMiles:(double) miles {
+    return miles * 1609.344;
+}
+
+// zoom in to current location
+- (void) zoomIn {
+    MKCoordinateRegion region =
+    MKCoordinateRegionMakeWithDistance (
+                                        self.location.coordinate, [self getMetersFromMiles:5], [self getMetersFromMiles:5]);
+    [self.mapView setRegion:region animated:YES];
+}
+
+// Location Manager Delegate Methods
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    NSLog(@"%@", [locations lastObject]);
+}
+
+// MapView Delegate methods
+- (void) mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views {
+    //[self zoomIn];
+}
+
+// annotation view assignment
+-(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+    if([annotation isKindOfClass:[MKUserLocation class]]) {
+        return nil;
+    }
+    
+    NSString *reuseIdentifier = @"Bar";
+    Bar *customAnnotationView = (Bar *)[self.mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier];
+   
+    if (!customAnnotationView) {
+        customAnnotationView = [[Bar alloc]initWithAnnotationWithImage:annotation reuseIdentifier:reuseIdentifier annotationViewImage:[UIImage imageNamed:@"beer_48.png"]];
+        customAnnotationView.annotation = annotation;
+        customAnnotationView.canShowCallout=YES;
+        
+        // Setup side views here
+        // Left one
+        //UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 46, 46)];
+        //customAnnotationView.leftCalloutAccessoryView = imageView;
+        
+        //Right One
+        UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        
+        //[disclosureButton sizeToFit];
+        customAnnotationView.rightCalloutAccessoryView = disclosureButton;
+    }
+    return customAnnotationView;
+}
+
+-(void) mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control {
+    if (control == view.rightCalloutAccessoryView) {
+        
+        selectedBar = [[Bar alloc]init];
+        selectedBar = (Bar *)view.annotation;
+        
+        [self performSegueWithIdentifier:@"Show Bar Details" sender:selectedBar];
+    }
+}
+
+-(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    BarDetailViewController *detailView = [segue destinationViewController];
+    
+    // set bar detail properties
+    [detailView setBarName:self.selectedBar.name];
+    [detailView setBarAddress:[NSString stringWithFormat:@"%@\n%@, %@, %@",self.selectedBar.street, self.selectedBar.city, self.selectedBar.state, self.selectedBar.zip]];
+    [detailView setBarSpecial:self.selectedBar.special];
+    [detailView setBar:selectedBar];
 }
 
 @end

@@ -12,15 +12,16 @@
 #import "Parser.h"
 #import "Bar.h"
 
-@interface ViewController : UIViewController<CLLocationManagerDelegate> {
+@interface ViewController : UIViewController<CLLocationManagerDelegate, MKMapViewDelegate> {
 MKMapView *mapView;
 }
 @property (nonatomic, retain) IBOutlet MKMapView *mapView;
 @property (strong, nonatomic) CLLocationManager *locationManager;
-- (IBAction)setMap:(id)sender;
-- (IBAction)getLocation:(id)sender;
-- (IBAction)direction:(id)sender;
-- (void) doParse:(NSData *)data;
+@property (strong, nonatomic) CLLocation *location;
+@property Bar* selectedBar;
 
+- (IBAction)setMap:(id)sender;
+- (void) doParse:(NSData *)data;
+-(double) getMetersFromMiles:(double) miles;
 @end
 

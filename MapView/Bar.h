@@ -7,13 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MapKit/MapKit.h>
 
-@interface Bar : NSObject
+
+@interface Bar : MKAnnotationView <MKAnnotation> {
+    CLLocationCoordinate2D coordinate;
+    NSString *title;
+    NSString *subtitle;
+}
 // Bar properties
 @property (nonatomic) NSInteger barId;
-@property (strong, nonatomic) NSString *name, *street, *city, *state, *zip, *phone, *neighborhood, *hours, *url, *mon, *tue, *wed, *thu, *fri, *sat, *sun;
+@property (strong, nonatomic) NSString *name, *street, *city, *state, *zip, *phone, *neighborhood, *hours, *url, *special;
 @property (nonatomic) double lat, lng;
 @property (strong, nonatomic) NSMutableDictionary *barDetails;
+@property (nonatomic, assign) CLLocationCoordinate2D coordinate;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *subtitle;
+
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation;
 
 
 // constructor
@@ -29,11 +41,11 @@
     neighborhood:(NSString *)neighborhood
            hours:(NSString *)hours
              url:(NSString *)url
-             mon:(NSString *)mon
-             tue:(NSString *)tue
-             wed:(NSString *)wed
-             thu:(NSString *)thu
-             fri:(NSString *)fri
-             sat:(NSString *)sat
-             sun:(NSString *)sun;
+             special:(NSString *)special;
+
+-(id) initWithAnnotationWithImage:(id<MKAnnotation>)annotation
+                  reuseIdentifier:(NSString *)reuseIdentifier
+              annotationViewImage:(UIImage*)anonViewImage;
+
+
 @end
