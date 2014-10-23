@@ -13,15 +13,15 @@
 @end
 
 @implementation BarDetailViewController
-@synthesize barName, barAddress, barSpecial, bar;
+@synthesize barName, barAddress, barSpecial, barPhone, bar;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.lblName.text = self.bar.name;
     self.lblAddress.text = self.barAddress;
-    self.barPhoneNumber.text = self.bar.phone;
+    self.lblPhone.text = self.bar.phone;
     self.lblSpecial.text = self.bar.special;
-    
+
 }
 
 - (void)didReceiveMemoryWarning {

@@ -125,6 +125,7 @@
     pin.city = bar.city;
     pin.state = bar.state;
     pin.zip = bar.zip;
+    pin.phone = bar.phone;
     pin.special = bar.special;
     
     MKCoordinateRegion pinRegion;

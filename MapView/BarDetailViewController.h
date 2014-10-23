@@ -13,12 +13,13 @@
 @property (strong, nonatomic) NSString *barName;
 @property (strong, nonatomic) NSString *barAddress;
 @property (strong, nonatomic) NSString *barSpecial;
+@property (strong, nonatomic) NSString *barPhone;
 @property (strong, nonatomic) Bar* bar;
 
 @property (weak, nonatomic) IBOutlet UILabel *lblName;
 @property (weak, nonatomic) IBOutlet UILabel *lblSpecial;
 @property (weak, nonatomic) IBOutlet UILabel *lblAddress;
 @property (weak, nonatomic) IBOutlet UITextView *lblPhone;
-@property (weak, nonatomic) IBOutlet UITextView *barPhoneNumber;
+
 
 @end
