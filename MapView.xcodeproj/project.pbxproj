@@ -14,12 +14,12 @@
 		FC30BCAE19F395E8001395FF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC30BCAD19F395E8001395FF /* Images.xcassets */; };
 		FC30BCB119F395E8001395FF /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC30BCAF19F395E8001395FF /* LaunchScreen.xib */; };
 		FC30BCBD19F395E8001395FF /* MapViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FC30BCBC19F395E8001395FF /* MapViewTests.m */; };
-		FC30BCC819F39606001395FF /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC30BCC719F39606001395FF /* MapKit.framework */; };
 		FC30BCCA19F3A9DD001395FF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC30BCC919F3A9DD001395FF /* CoreLocation.framework */; };
+		FC4C973119F8D6520028C64E /* DirectionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4C973019F8D6520028C64E /* DirectionsViewController.m */; };
 		FC67CD2719F616DA00712CF3 /* Bar.m in Sources */ = {isa = PBXBuildFile; fileRef = FC67CD2419F616DA00712CF3 /* Bar.m */; };
 		FC67CD2819F616DA00712CF3 /* Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = FC67CD2619F616DA00712CF3 /* Parser.m */; };
-		FC67CD2B19F635DE00712CF3 /* PEConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = FC67CD2A19F635DE00712CF3 /* PEConstants.m */; };
 		FCB1368E19F7B4CC00F09744 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB1368D19F7B4CC00F09744 /* QuartzCore.framework */; };
+		FCC561A819FF25D0000A23CC /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCC561A719FF25D0000A23CC /* MapKit.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		FCD67E9819F74BE7002BFB13 /* neiu.gpx in Resources */ = {isa = PBXBuildFile; fileRef = FCD67E9719F74BE7002BFB13 /* neiu.gpx */; };
 		FCD67EA119F7953C002BFB13 /* BarDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD67EA019F7953C002BFB13 /* BarDetailViewController.m */; };
 /* End PBXBuildFile section */
@@ -48,15 +48,15 @@
 		FC30BCB619F395E8001395FF /* MapViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC30BCBB19F395E8001395FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FC30BCBC19F395E8001395FF /* MapViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapViewTests.m; sourceTree = "<group>"; };
-		FC30BCC719F39606001395FF /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		FC30BCC919F3A9DD001395FF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		FC4C972F19F8D6520028C64E /* DirectionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectionsViewController.h; sourceTree = "<group>"; };
+		FC4C973019F8D6520028C64E /* DirectionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DirectionsViewController.m; sourceTree = "<group>"; };
 		FC67CD2319F616DA00712CF3 /* Bar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bar.h; sourceTree = "<group>"; };
 		FC67CD2419F616DA00712CF3 /* Bar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bar.m; sourceTree = "<group>"; };
 		FC67CD2519F616DA00712CF3 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
 		FC67CD2619F616DA00712CF3 /* Parser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Parser.m; sourceTree = "<group>"; };
-		FC67CD2919F635DE00712CF3 /* PEConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEConstants.h; sourceTree = "<group>"; };
-		FC67CD2A19F635DE00712CF3 /* PEConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEConstants.m; sourceTree = "<group>"; };
 		FCB1368D19F7B4CC00F09744 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FCC561A719FF25D0000A23CC /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		FCD67E9719F74BE7002BFB13 /* neiu.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = neiu.gpx; sourceTree = "<group>"; };
 		FCD67E9F19F7953C002BFB13 /* BarDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarDetailViewController.h; sourceTree = "<group>"; };
 		FCD67EA019F7953C002BFB13 /* BarDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarDetailViewController.m; sourceTree = "<group>"; };
@@ -67,9 +67,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCB1368E19F7B4CC00F09744 /* QuartzCore.framework in Frameworks */,
 				FC30BCCA19F3A9DD001395FF /* CoreLocation.framework in Frameworks */,
-				FC30BCC819F39606001395FF /* MapKit.framework in Frameworks */,
+				FCC561A819FF25D0000A23CC /* MapKit.framework in Frameworks */,
+				FCB1368E19F7B4CC00F09744 /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,10 +86,10 @@
 		FC30BC9419F395E8001395FF = {
 			isa = PBXGroup;
 			children = (
+				FCC561A719FF25D0000A23CC /* MapKit.framework */,
 				FCB1368D19F7B4CC00F09744 /* QuartzCore.framework */,
 				FCD67E9719F74BE7002BFB13 /* neiu.gpx */,
 				FC30BCC919F3A9DD001395FF /* CoreLocation.framework */,
-				FC30BCC719F39606001395FF /* MapKit.framework */,
 				FC30BC9F19F395E8001395FF /* MapView */,
 				FC30BCB919F395E8001395FF /* MapViewTests */,
 				FC30BC9E19F395E8001395FF /* Products */,
@@ -108,8 +108,6 @@
 		FC30BC9F19F395E8001395FF /* MapView */ = {
 			isa = PBXGroup;
 			children = (
-				FC67CD2919F635DE00712CF3 /* PEConstants.h */,
-				FC67CD2A19F635DE00712CF3 /* PEConstants.m */,
 				FC67CD2319F616DA00712CF3 /* Bar.h */,
 				FC67CD2419F616DA00712CF3 /* Bar.m */,
 				FC67CD2519F616DA00712CF3 /* Parser.h */,
@@ -125,6 +123,8 @@
 				FC30BCA019F395E8001395FF /* Supporting Files */,
 				FCD67E9F19F7953C002BFB13 /* BarDetailViewController.h */,
 				FCD67EA019F7953C002BFB13 /* BarDetailViewController.m */,
+				FC4C972F19F8D6520028C64E /* DirectionsViewController.h */,
+				FC4C973019F8D6520028C64E /* DirectionsViewController.m */,
 			);
 			path = MapView;
 			sourceTree = "<group>";
@@ -268,11 +268,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC4C973119F8D6520028C64E /* DirectionsViewController.m in Sources */,
 				FC30BCA919F395E8001395FF /* ViewController.m in Sources */,
 				FC67CD2719F616DA00712CF3 /* Bar.m in Sources */,
 				FC30BCA619F395E8001395FF /* AppDelegate.m in Sources */,
 				FC67CD2819F616DA00712CF3 /* Parser.m in Sources */,
-				FC67CD2B19F635DE00712CF3 /* PEConstants.m in Sources */,
 				FC30BCA319F395E8001395FF /* main.m in Sources */,
 				FCD67EA119F7953C002BFB13 /* BarDetailViewController.m in Sources */,
 			);
@@ -397,8 +397,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MapView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -407,8 +409,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MapView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

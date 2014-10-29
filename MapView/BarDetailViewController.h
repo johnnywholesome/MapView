@@ -8,18 +8,19 @@
 
 #import <UIKit/UIKit.h>
 #import "Bar.h"
+#import "DirectionsViewController.h"
 
 @interface BarDetailViewController : UIViewController
-@property (strong, nonatomic) NSString *barName;
 @property (strong, nonatomic) NSString *barAddress;
-@property (strong, nonatomic) NSString *barSpecial;
-@property (strong, nonatomic) NSString *barPhone;
+@property (nonatomic) CLLocationDegrees currentLatitude;
+@property (nonatomic) CLLocationDegrees currentLongitude;
 @property (strong, nonatomic) Bar* bar;
 
 @property (weak, nonatomic) IBOutlet UILabel *lblName;
-@property (weak, nonatomic) IBOutlet UILabel *lblSpecial;
+@property (weak, nonatomic) IBOutlet UITextView *lblSpecial;
 @property (weak, nonatomic) IBOutlet UILabel *lblAddress;
 @property (weak, nonatomic) IBOutlet UITextView *lblPhone;
+@property (weak, nonatomic) IBOutlet UITextView *lblHours;
 
 
 @end

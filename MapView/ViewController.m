@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "PEConstants.h"
 #import "BarDetailViewController.h"
 
 @interface ViewController () {
@@ -17,27 +16,146 @@
 @end
 
 @implementation ViewController
-@synthesize mapView;
-@synthesize locationManager;
-@synthesize location;
-@synthesize selectedBar;
+@synthesize mapView, locationManager, location, selectedBar, currentLatitude, currentLongitude, found;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // get current location
-    [self getCurrentLocation];
-    
     // set MKMapViewDelegate to self
     self.mapView.delegate =self;
     
+    
+    locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    [locationManager startUpdatingLocation];
+    
+    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
+    if ([locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [locationManager requestWhenInUseAuthorization];
+    }
+    //[locationManager startUpdatingLocation];
+    //[self getCurrentLocation];
+    
     // create pointer to bar data xml file
-    NSData *data = [self setData];
+    self.data = [self setData];
     
     // parse xml file and add annotations to map
-    [self doParse:data];
+    [self parseXmlData:self.data];
     
-    [self zoomIn];
+    // Determine if the user authorized location services
+    [self checkStatus];
+
+}
+
+
+// Check authorization status
+-(void)checkStatus{
+    
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    
+    if (status==kCLAuthorizationStatusNotDetermined) {
+        [self getCurrentLocation];
+        NSLog(@"Permission Undetermined.");
+        if (self.isFound) {
+            [self zoomIn];
+        }
+        else {
+            [self zoomInOnCityNamed:@"Chicago"];
+        }
+        
+    }
+    
+    if (status==kCLAuthorizationStatusDenied) {
+        NSLog(@"Permission Denied");
+        [self zoomInOnCityNamed:@"Chicago"];
+    }
+    
+    if (status==kCLAuthorizationStatusRestricted) {
+        NSLog(@"Permission Authorization Status Restricted");
+        [self zoomInOnCityNamed:@"Chicago"];
+        
+    }
+    
+    if (status==kCLAuthorizationStatusAuthorizedAlways) {
+        NSLog(@"Permission Authorized Always On");
+        //[self getCurrentLocation];
+    }
+    
+    if (status==kCLAuthorizationStatusAuthorizedWhenInUse) {
+        NSLog(@"Permission Authorized When In Use");
+        [self getCurrentLocation];
+        if (self.isFound) {
+            [self zoomIn];
+        }
+        else {
+            [self zoomInOnCityNamed:@"Chicago"];
+        }
+       
+        //[self zoomIn];
+    }
+    
+}
+
+// Gets the user's current location
+-(void) getCurrentLocation {
+    
+        location = [[CLLocation alloc]init];
+        location = [locationManager location];
+        [self setCurrentLongitude:location.coordinate.longitude];
+        [self setCurrentLatitude:location.coordinate.latitude];
+    
+    NSLog(@"Latitude: %f -- Longitude %f", currentLatitude, currentLongitude);
+}
+
+-(BOOL)isFound {
+    return (currentLongitude != 0.000000 && currentLatitude != 0.000000);
+}
+
+// Converts miles to meters
+-(double) getMetersFromMiles:(double) miles {
+    return miles * 1609.344;
+}
+
+// zoom in to current location
+- (void) zoomIn {
+    
+    MKCoordinateRegion region =
+    MKCoordinateRegionMakeWithDistance (
+                                        self.location.coordinate, [self getMetersFromMiles:5], [self getMetersFromMiles:5]);
+    [self.mapView setRegion:region animated:YES];
+}
+
+- (void) zoomInOnCityNamed:(NSString*)city {
+    if ([city  isEqual: @"Chicago"]) {
+        location = [[CLLocation alloc]initWithLatitude:41.917488 longitude:-87.658318];
+    }
+    MKCoordinateRegion region =
+    MKCoordinateRegionMakeWithDistance (
+                                        self.location.coordinate, [self getMetersFromMiles:10], [self getMetersFromMiles:10]);
+    [self.mapView setRegion:region animated:YES];
+}
+
+// Delegate method from the CLLocationManagerDelegate protocol.
+
+- (void)locationManager:(CLLocationManager *)manager
+
+     didUpdateLocations:(NSArray *)locations {
+    location = [[CLLocation alloc]init];
+    location = [locations lastObject];
+    [self setCurrentLongitude:location.coordinate.latitude];
+    [self setCurrentLongitude:location.coordinate.longitude];
+    
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
+    location = [[CLLocation alloc]initWithLatitude:newLocation.coordinate.latitude longitude:newLocation.coordinate.longitude];
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error {
+    [locationManager stopUpdatingLocation];
+    location = [[CLLocation alloc]initWithLatitude:41.980212 longitude:-87.718797];
+    [self setCurrentLatitude:location.coordinate.latitude];
+    [self setCurrentLongitude:location.coordinate.longitude];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -63,24 +181,6 @@
     }
 }
 
-// Gets the user's current location
--(void) getCurrentLocation {
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
-    
-    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
-    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [self.locationManager requestWhenInUseAuthorization];
-    }
-    [self.locationManager startUpdatingLocation];
-    //[self.locationManager stopUpdatingLocation];
-    
-    self.location = [locationManager location];
-    float longitude=self.location.coordinate.longitude;
-    float latitude=self.location.coordinate.latitude;
-    NSLog(@"Latitude: %f -- Longitude %f", latitude, longitude);
-}
-
 // Sets the data file to pass to NSXMLParser
 - (NSData *) setData {
     NSString *urlString = [NSString stringWithFormat:@"http://www.alcohost.com/global_bars_xml_edit.php?today=%@",[self today]];
@@ -89,8 +189,9 @@
     return data;
 }
 
+
 // Method to parse XML file
-- (void) doParse:(NSData *)data {
+- (void) parseXmlData:(NSData *)data {
     // create and init NSXMLParser object
     NSXMLParser *nsXmlParser = [[NSXMLParser alloc] initWithData:data];
     // create and init the delegate
@@ -98,12 +199,11 @@
     // set delegate
     [nsXmlParser setDelegate:parser];
     // parsing...
-    BOOL success = [nsXmlParser parse];
+    //BOOL success = [nsXmlParser parse];
     // test the result
-    if (success) {
+    if ([nsXmlParser parse]) {
         NSLog(@"Success!");
-        // get array of users here
-        //  NSMutableArray *users = [parser users];
+        // get array of bars here
         // Add Annotations to the MapView
         for (Bar *bar in parser.bars) {
             if (bar)
@@ -125,12 +225,16 @@
     pin.city = bar.city;
     pin.state = bar.state;
     pin.zip = bar.zip;
+    pin.lat = bar.lat;
+    pin.lng = bar.lng;
     pin.phone = bar.phone;
+    pin.neighborhood = bar.neighborhood;
+    pin.hours = bar.hours;
     pin.special = bar.special;
-    
+
     MKCoordinateRegion pinRegion;
-    pinRegion.center.latitude = bar.lat;
-    pinRegion.center.longitude = bar.lng;
+    pinRegion.center.latitude = pin.lat;
+    pinRegion.center.longitude = pin.lng;
     pin.coordinate = pinRegion.center;
     [mapView addAnnotation:pin];
 }
@@ -144,24 +248,6 @@
     return[myFormatter stringFromDate:today];
 }
 
-// Converts miles to meters
--(double) getMetersFromMiles:(double) miles {
-    return miles * 1609.344;
-}
-
-// zoom in to current location
-- (void) zoomIn {
-    MKCoordinateRegion region =
-    MKCoordinateRegionMakeWithDistance (
-                                        self.location.coordinate, [self getMetersFromMiles:5], [self getMetersFromMiles:5]);
-    [self.mapView setRegion:region animated:YES];
-}
-
-// Location Manager Delegate Methods
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-{
-    NSLog(@"%@", [locations lastObject]);
-}
 
 // MapView Delegate methods
 - (void) mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views {
@@ -171,6 +257,7 @@
 // annotation view assignment
 -(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
     if([annotation isKindOfClass:[MKUserLocation class]]) {
+        [self zoomIn];
         return nil;
     }
     
@@ -178,7 +265,7 @@
     Bar *customAnnotationView = (Bar *)[self.mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier];
    
     if (!customAnnotationView) {
-        customAnnotationView = [[Bar alloc]initWithAnnotationWithImage:annotation reuseIdentifier:reuseIdentifier annotationViewImage:[UIImage imageNamed:@"beer_48.png"]];
+        customAnnotationView = [[Bar alloc]initWithAnnotationWithImage:annotation reuseIdentifier:reuseIdentifier annotationViewImage:[UIImage imageNamed:@"beer_24.png"]];
         customAnnotationView.annotation = annotation;
         customAnnotationView.canShowCallout=YES;
         
@@ -209,10 +296,10 @@
 -(void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     BarDetailViewController *detailView = [segue destinationViewController];
     
-    // set bar detail properties
-    [detailView setBarName:self.selectedBar.name];
-    [detailView setBarAddress:[NSString stringWithFormat:@"%@\n%@, %@, %@",self.selectedBar.street, self.selectedBar.city, self.selectedBar.state, self.selectedBar.zip]];
-    [detailView setBarSpecial:self.selectedBar.special];
+    // passing along needed data
+    [detailView setCurrentLatitude:self.currentLatitude];
+    [detailView setCurrentLongitude:self.currentLongitude];
+    //NSLog(NSString stringWithFormat:@"%ld, %ld", self.currentLatitude, self.currentLongitude);
     [detailView setBar:selectedBar];
 }
 
